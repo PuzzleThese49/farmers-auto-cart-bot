@@ -30,17 +30,23 @@ async function checkProduct(product) {
     const timestamp = new Date().toLocaleTimeString();
 
     if (available && !lastStatus[product.name]) {
-      await bot.sendMessage(CHAT_ID, `✅ ${product.name} is now available!
-${product.url}`);
+      await bot.sendMessage(CHAT_ID, `✅ ${product.name} is now available!\n${product.url}`);
+      console.log(`[${timestamp}] ALERT SENT for: ${product.name}`);
     }
 
     lastStatus[product.name] = available;
-    return `${timestamp} - ${product.name}: ${available ? '🟢 In Stock' : '🔴 Unavailable'}`;
+    console.log(`[${timestamp}] Checked: ${product.name} - ${available ? '🟢 In Stock' : '🔴 Unavailable'}`);
   } catch (error) {
-    return `${new Date().toLocaleTimeString()} - ${product.name}: ❌ Error`;
+    console.log(`[${new Date().toLocaleTimeString()}] ❌ Error checking ${product.name}`);
   }
 }
 
+// 🔁 Automatic checker every 30 seconds (adjust as needed)
+setInterval(() => {
+  products.forEach(product => checkProduct(product));
+}, 30000);
+
+// 🌐 Keep the server alive with a simple dashboard
 app.get('/', async (req, res) => {
   const checks = await Promise.all(products.map(p => checkProduct(p)));
   const statusHtml = checks.map(s => `<p>${s}</p>`).join('');
