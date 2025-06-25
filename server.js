@@ -26,7 +26,7 @@ let lastStatus = {};
 async function checkProduct(product) {
   try {
     const res = await axios.get(product.url);
-    const available = !res.data.includes('Unavailable');
+    const available = res.data.includes('data-testing-id="addToCartButton"');
     const timestamp = new Date().toLocaleTimeString();
 
     if (available && !lastStatus[product.name]) {
