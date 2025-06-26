@@ -41,10 +41,19 @@ async function checkProduct(product) {
   }
 }
 
-// 🔁 Automatic checker every 30 seconds (adjust as needed)
-setInterval(() => {
-  products.forEach(product => checkProduct(product));
-}, 30000);
+// 🔁 Randomised check every 1.5 to 5 seconds
+function scheduleNextCheck() {
+  const delay = Math.floor(Math.random() * (5000 - 1500 + 1)) + 1500; // 1.5s–5s
+  console.log(`⏳ Next check in ${delay / 1000}s`);
+
+  setTimeout(async () => {
+    for (const product of products) {
+      await checkProduct(product);
+    }
+    scheduleNextCheck();
+  }, delay);
+}
+scheduleNextCheck(); // start the random loop
 
 // 🌐 Keep the server alive with a simple dashboard
 app.get('/', async (req, res) => {
